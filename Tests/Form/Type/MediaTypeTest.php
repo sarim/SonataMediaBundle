@@ -12,12 +12,157 @@
 namespace Sonata\MediaBundle\Tests\Form\Type;
 
 use Sonata\MediaBundle\Form\Type\MediaType;
+use Symfony\Component\Form\Forms;
 
 /**
  * @author Virgile Vivier <virgilevivier@gmail.com>
+ * @author Christian Gripp <mail@core23.de>
  */
 class MediaTypeTest extends AbstractTypeTest
 {
+    protected $mediaPool;
+
+    /**
+     * @var MediaType
+     */
+    protected $mediaType;
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->mediaPool = $this->getMockBuilder('Sonata\MediaBundle\Provider\Pool')->disableOriginalConstructor()->getMock();
+        $this->mediaType = new MediaType($this->mediaPool, 'testClass');
+
+        $this->factory = Forms::createFormFactoryBuilder()
+            ->addType($this->mediaType)
+            ->addExtensions($this->getExtensions())
+            ->getFormFactory();
+    }
+
+    public function testMissingFormOptions()
+    {
+        $this->mediaPool->expects($this->any())->method('getProviderList')->will($this->returnValue(array(
+            'provider_a' => 'provider_a',
+            'provider_b' => 'provider_b',
+        )));
+        $this->mediaPool->expects($this->any())->method('getContexts')->will($this->returnValue(array(
+            'video' => array(),
+            'pic' => array(),
+        )));
+
+        $this->setExpectedException(
+            'Symfony\Component\OptionsResolver\Exception\MissingOptionsException',
+            'The required options "context", "provider" are missing.'
+        );
+
+        $this->factory->create(
+            method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix') ?
+                'Sonata\MediaBundle\Form\Type\MediaType' :
+                'sonata_media_type'
+        );
+    }
+
+    public function testMissingFormContextOption()
+    {
+        $this->mediaPool->expects($this->any())->method('getProviderList')->will($this->returnValue(array(
+            'provider_a' => 'provider_a',
+            'provider_b' => 'provider_b',
+        )));
+        $this->mediaPool->expects($this->any())->method('getContexts')->will($this->returnValue(array(
+            'video' => array(),
+            'pic' => array(),
+        )));
+
+        $this->setExpectedException(
+            'Symfony\Component\OptionsResolver\Exception\MissingOptionsException',
+            'The required option "context" is missing.'
+        );
+
+        $this->factory->create(
+            method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix') ?
+                'Sonata\MediaBundle\Form\Type\MediaType' :
+                'sonata_media_type',
+            null,
+            array('provider' => 'sonata.media.provider.image')
+        );
+    }
+
+    public function testMissingFormProviderOption()
+    {
+        $this->mediaPool->expects($this->any())->method('getProviderList')->will($this->returnValue(array(
+            'provider_a' => 'provider_a',
+            'provider_b' => 'provider_b',
+        )));
+        $this->mediaPool->expects($this->any())->method('getContexts')->will($this->returnValue(array(
+            'video' => array(),
+            'pic' => array(),
+        )));
+
+        $this->setExpectedException(
+            'Symfony\Component\OptionsResolver\Exception\MissingOptionsException',
+            'The required option "provider" is missing.'
+            );
+
+        $this->factory->create(
+            method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix') ?
+                'Sonata\MediaBundle\Form\Type\MediaType' :
+                'sonata_media_type',
+            null,
+            array('context' => 'photo')
+        );
+    }
+
+    public function testInvalidFormProviderOption()
+    {
+        $this->mediaPool->expects($this->any())->method('getProviderList')->will($this->returnValue(array(
+            'provider_a' => 'provider_a',
+            'provider_b' => 'provider_b',
+        )));
+        $this->mediaPool->expects($this->any())->method('getContexts')->will($this->returnValue(array(
+            'video' => array(),
+            'pic' => array(),
+        )));
+
+        $this->setExpectedException(
+            'Symfony\Component\OptionsResolver\Exception\InvalidOptionsException',
+            'The option "provider" with value "provider_c" is invalid. Accepted values are: "provider_a", "provider_b".'
+        );
+
+        $this->factory->create(
+            method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix') ?
+                'Sonata\MediaBundle\Form\Type\MediaType' :
+                'sonata_media_type',
+            null,
+            array('provider' => 'provider_c', 'context' => 'photo')
+        );
+    }
+
+    public function testInvalidFormContextOption()
+    {
+        $this->mediaPool->expects($this->any())->method('getProviderList')->will($this->returnValue(array(
+            'provider_a' => 'provider_a',
+            'provider_b' => 'provider_b',
+        )));
+        $this->mediaPool->expects($this->any())->method('getContexts')->will($this->returnValue(array(
+            'video' => array(),
+            'pic' => array(),
+        )));
+
+        $this->setExpectedException(
+            'Symfony\Component\OptionsResolver\Exception\InvalidOptionsException',
+            'The option "context" with value "photo" is invalid. Accepted values are: "video", "pic".'
+        );
+
+        $this->factory->create(
+            method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix') ?
+                'Sonata\MediaBundle\Form\Type\MediaType' :
+                'sonata_media_type',
+            null,
+            array('provider' => 'provider_b', 'context' => 'photo')
+        );
+    }
+
     protected function getTestedInstance()
     {
         return new MediaType($this->mediaPool, 'testclass');
