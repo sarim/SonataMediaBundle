@@ -187,4 +187,11 @@ class DailyMotionProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(100, $properties['height']);
         $this->assertSame(100, $properties['width']);
     }
+
+    public function testGetReferenceUrl()
+    {
+        $media = new Media();
+        $media->setProviderReference('123456');
+        $this->assertEquals('http://www.dailymotion.com/video/123456', $this->getProvider()->getReferenceUrl($media));
+    }
 }

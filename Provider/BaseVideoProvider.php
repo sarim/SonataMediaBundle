@@ -50,6 +50,10 @@ abstract class BaseVideoProvider extends BaseProvider
     {
         parent::__construct($name, $filesystem, $cdn, $pathGenerator, $thumbnail);
 
+        if (!method_exists($this, 'getReferenceUrl')) {
+            @trigger_error('The method "getReferenceUrl" is required with the next major release.', E_USER_DEPRECATED);
+        }
+
         $this->browser = $browser;
         $this->metadata = $metadata;
     }
@@ -178,6 +182,16 @@ abstract class BaseVideoProvider extends BaseProvider
     public function postRemove(MediaInterface $media)
     {
     }
+
+    // NEXT_MAJOR: Uncomment this method
+    /*
+     * Get provider reference url.
+     *
+     * @param MediaInterface $media
+     *
+     * @return string
+     */
+    // abstract public function getReferenceUrl(MediaInterface $media);
 
     /**
      * @throws \RuntimeException

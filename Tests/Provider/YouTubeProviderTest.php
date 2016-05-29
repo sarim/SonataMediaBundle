@@ -206,4 +206,11 @@ class YouTubeProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(100, $properties['player_parameters']['height']);
         $this->assertSame(100, $properties['player_parameters']['width']);
     }
+
+    public function testGetReferenceUrl()
+    {
+        $media = new Media();
+        $media->setProviderReference('123456');
+        $this->assertEquals('http://www.youtube.com/watch?v=123456', $this->getProvider()->getReferenceUrl($media));
+    }
 }
