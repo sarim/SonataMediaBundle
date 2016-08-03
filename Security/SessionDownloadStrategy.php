@@ -12,15 +12,25 @@
 namespace Sonata\MediaBundle\Security;
 
 use Sonata\MediaBundle\Model\MediaInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
+ * Class SessionDownloadStrategy.
+ *
  * @author Ahmet Akbana <ahmetakbana@gmail.com>
  */
 class SessionDownloadStrategy implements DownloadStrategyInterface
 {
+     * @var ContainerInterface
+     *
+     * @deprecated Since version 3.1, will be removed in 4.0.
+     * NEXT_MAJOR : remove this property
+     */
+    protected $container;
+
     /**
      * @var TranslatorInterface
      */
